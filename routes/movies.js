@@ -3,46 +3,46 @@ const { celebrate, Joi } = require('celebrate');
 const urlvalidator = require('../middlewares/url-validation');
 
 const {
-  addCard, getCards, deleteCard, putLike, removeLike,
-} = require('../controllers/cards');
+  addMovie, getMovies, deleteMovie, /* putLike, removeLike, */
+} = require('../controllers/movies');
 
 router.post(
-  '/cards',
+  '/movies',
   celebrate({
     body: Joi.object().keys({
       name: Joi.string().required().min(2).max(30),
       link: Joi.string().required().custom(urlvalidator, 'custom URL validator'),
     }),
   }),
-  addCard,
+  addMovie,
 );
-router.get('/cards', getCards);
+router.get('/movies', getMovies);
 router.delete(
-  '/cards/:cardId',
+  '/movies/:movieId',
   celebrate({
     params: Joi.object().keys({
       cardId: Joi.string().hex().length(24),
     }),
   }),
-  deleteCard,
+  deleteMovie,
 );
-router.put(
-  '/cards/:cardId/likes',
-  celebrate({
-    params: Joi.object().keys({
-      cardId: Joi.string().hex().length(24),
-    }),
-  }),
-  putLike,
-);
-router.delete(
-  '/cards/:cardId/likes',
-  celebrate({
-    params: Joi.object().keys({
-      cardId: Joi.string().hex().length(24),
-    }),
-  }),
-  removeLike,
-);
+// router.put(
+//   '/cards/:cardId/likes',
+//   celebrate({
+//     params: Joi.object().keys({
+//       cardId: Joi.string().hex().length(24),
+//     }),
+//   }),
+//   putLike,
+// );
+// router.delete(
+//   '/cards/:cardId/likes',
+//   celebrate({
+//     params: Joi.object().keys({
+//       cardId: Joi.string().hex().length(24),
+//     }),
+//   }),
+//   removeLike,
+// );
 
 module.exports = router;
