@@ -24,7 +24,7 @@ const getMovies = (req, res, next) => {
 };
 
 const deleteMovie = (req, res, next) => {
-  const id = req.params.cardId;
+  const id = req.params._id;
   Movie.findById(id)
     .orFail(new Error('NotValidId'))
     .then((movie) => {

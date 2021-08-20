@@ -10,8 +10,18 @@ router.post(
   '/movies',
   celebrate({
     body: Joi.object().keys({
-      name: Joi.string().required().min(2).max(30),
-      link: Joi.string().required().custom(urlvalidator, 'custom URL validator'),
+      country: Joi.string().required().min(2).max(30),
+      director: Joi.string().required().min(2).max(30),
+      duration: Joi.number().required(),
+      year: Joi.string().required().min(2).max(4),
+      description: Joi.string().required(),
+      image: Joi.string().required().custom(urlvalidator, 'custom URL validator'),
+      trailer: Joi.string().required().custom(urlvalidator, 'custom URL validator'),
+      thumbnail: Joi.string().required().custom(urlvalidator, 'custom URL validator'),
+      owner: Joi.string().hex().length(24),
+      movieId: Joi.string().required(),
+      nameRu: Joi.string().required(),
+      nameEn: Joi.string().required(),
     }),
   }),
   addMovie,
@@ -21,7 +31,7 @@ router.delete(
   '/movies/:movieId',
   celebrate({
     params: Joi.object().keys({
-      cardId: Joi.string().hex().length(24),
+      _id: Joi.string().hex().length(24),
     }),
   }),
   deleteMovie,
