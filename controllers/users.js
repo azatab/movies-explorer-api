@@ -74,7 +74,6 @@ const login = (req, res, next) => {
 
 const getCurrentUser = (req, res, next) => {
   const id = req.user._id;
-  console.log(req.user);
 
   User.findById(id)
     .then((user) => {
