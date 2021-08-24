@@ -11,14 +11,14 @@ const urlvalidator = (value, helpers) => {
 const validateSignin = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required(),
   }),
 });
 
 const validateSignup = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
   }),
 });
@@ -34,7 +34,7 @@ const validateMovie = celebrate({
     trailer: Joi.string().required().custom(urlvalidator, 'custom URL validator'),
     thumbnail: Joi.string().required().custom(urlvalidator, 'custom URL validator'),
     owner: Joi.string().hex().length(24),
-    movieId: Joi.string().required(),
+    movieId: Joi.number().required(),
     nameRu: Joi.string().required(),
     nameEn: Joi.string().required(),
   }),

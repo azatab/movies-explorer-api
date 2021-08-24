@@ -56,44 +56,4 @@ const deleteMovie = (req, res, next) => {
     .catch(next);
 };
 
-const putLike = (req, res, next) => {
-  Movie.findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true },
-  )
-    .orFail(new Error('NotValidId'))
-    .then((movie) => res.status(200).send(movie))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные');
-      } if (err.message === 'NotValidId') {
-        throw new NotFoundError('Нет фильма с таким id');
-      }
-      next(err);
-    })
-    .catch(next);
-};
-
-const removeLike = (req, res, next) => {
-  Movie.findByIdAndUpdate(
-    req.params.cardId,
-    { $pull: { likes: req.user._id } },
-    { new: true },
-  )
-    .orFail(new Error('NotValidId'))
-    .then((movie) => res.status(200).send(movie))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные');
-      } if (err.message === 'NotValidId') {
-        throw new NotFoundError('Нет фильма с таким id');
-      }
-      next(err);
-    })
-    .catch(next);
-};
-
-module.exports = {
-  addMovie, getMovies, deleteMovie, putLike, removeLike,
-};
+module.exports = { addMovie, getMovies, deleteMovie };

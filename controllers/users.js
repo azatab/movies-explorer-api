@@ -32,27 +32,6 @@ const addUser = (req, res, next) => {
     .catch(next);
 };
 
-const getUsers = (req, res, next) => User.find({})
-  .then((users) => res.status(200).send(users))
-  .catch(next);
-
-const getUser = (req, res, next) => {
-  const { userId } = req.params;
-  User.findOne({ _id: userId })
-    .orFail(new Error('NotValidId'))
-    .then((user) => {
-      res.status(200).send(user);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        throw new BadRequestError(err.message);
-      } if (err.message === 'NotValidId') {
-        throw new NotFoundError('Запрашиваемый пользователь не найден');
-      }
-      next(err);
-    })
-    .catch(next);
-};
 const updateUserProfile = (req, res, next) => {
   const data = { ...req.body };
   return User.findByIdAndUpdate(
@@ -68,7 +47,9 @@ const updateUserProfile = (req, res, next) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'MongoError' && err.code === 11000) {
+        throw new ConflictError(`Пользователь с почтой ${data.email} уже существует!`);
+      } if (err.name === 'CastError') {
         throw new BadRequestError('Переданы некорректные данные');
       } if (err.message === 'NotValidId') {
         throw new NotFoundError('Запрашиваемый пользователь не найден');
@@ -106,5 +87,5 @@ const getCurrentUser = (req, res, next) => {
 };
 
 module.exports = {
-  addUser, getUsers, getUser, updateUserProfile, login, getCurrentUser,
+  addUser, updateUserProfile, login, getCurrentUser,
 };
