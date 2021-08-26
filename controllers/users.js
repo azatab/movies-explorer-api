@@ -17,19 +17,18 @@ const addUser = (req, res, next) => {
       password: hash,
       name: data.name,
     }))
-    .then((user) => res.status(200).send({
+    .then((user) => res.send({
       _id: user._id, email: user.email, name: user.name,
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        next(new BadRequestError('Переданы некорректные данные'));
       }
       if (err.name === 'MongoError' && err.code === 11000) {
-        throw new ConflictError(`Пользователь с почтой ${data.email} уже существует!`);
+        next(new ConflictError(`Пользователь с почтой ${data.email} уже существует!`));
       }
       next(err);
-    })
-    .catch(next);
+    });
 };
 
 const updateUserProfile = (req, res, next) => {
@@ -42,21 +41,18 @@ const updateUserProfile = (req, res, next) => {
       runValidators: true,
     },
   )
-    .orFail(new Error('NotValidId'))
+    .orFail(new NotFoundError('Запрашиваемый пользователь не найден'))
     .then((user) => {
-      res.status(200).send(user);
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'MongoError' && err.code === 11000) {
-        throw new ConflictError(`Пользователь с почтой ${data.email} уже существует!`);
+        next(new ConflictError(`Пользователь с почтой ${data.email} уже существует!`));
       } if (err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные');
-      } if (err.message === 'NotValidId') {
-        throw new NotFoundError('Запрашиваемый пользователь не найден');
+        next(new BadRequestError('Переданы некорректные данные'));
       }
       next(err);
-    })
-    .catch(next);
+    });
 };
 
 const login = (req, res, next) => {
@@ -67,7 +63,7 @@ const login = (req, res, next) => {
       res.send({ token });
     })
     .catch((err) => {
-      throw new UnautharizedError(err.message);
+      next(new UnautharizedError(err.message));
     })
     .catch(next);
 };
@@ -77,7 +73,7 @@ const getCurrentUser = (req, res, next) => {
 
   User.findById(id)
     .then((user) => {
-      res.status(200).send(user);
+      res.send(user);
     })
     .catch((err) => {
       res.send(err);
