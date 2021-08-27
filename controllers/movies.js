@@ -17,8 +17,13 @@ const addMovie = (req, res, next) => {
 };
 
 const getMovies = (req, res, next) => {
-  Movie.find({})
+  const owner = req.user._id;
+
+  Movie.find({ owner })
     .then((movies) => res.send(movies))
+    .catch((err) => {
+      next(new NotFoundError(err.message));
+    })
     .catch(next);
 };
 
@@ -36,8 +41,6 @@ const deleteMovie = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные'));
-      } if (err.message === 'NotValidId') {
-        next(new NotFoundError('Нет фильма с таким id'));
       }
       next(err);
     });
